@@ -1,0 +1,93 @@
+
+networks:
+  validator-net:
+  elastic:
+
+volumes:
+  snowstorm_preload:
+
+services:
+  validador-server:
+    build: .
+    networks:
+      - validator-net
+    ports:
+      - "${SERVER_PORT:?err}:8080"
+    depends_on:
+      - snowstorm
+    environment:
+      SNOMED_FHIR_BASE_URL: ${SNOMED_FHIR_BASE_URL:?err}
+      TEI_FHIR_PACKAGE_TEI: ${TEI_FHIR_PACKAGE_TEI:?err}
+      TEI_FHIR_PACKAGE_CORE: ${TEI_FHIR_PACKAGE_CORE:?err}
+      TEI_FHIR_PACKAGE_TEI_VERSION: ${TEI_FHIR_PACKAGE_TEI_VERSION:?err}
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - node.name=snowstorm
+      - cluster.name=snowstorm-cluster
+      - repositories.url.allowed_urls=["https://storage.googleapis.com/snowstorm-preload/"]
+      - action.destructive_requires_name=false
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+    volumes:
+      - snowstorm_preload:/usr/share/elasticsearch/data
+    networks:
+      elastic:
+        aliases:
+          - es
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://es:9200"]
+      interval: 1s
+      timeout: 1s
+      retries: 60
+    ports:
+      - 127.0.0.1:9200:9200
+    mem_reservation: 4g
+
+
+  snowstorm:
+    image: kaikewley/snowstorm:10.4.0-beta
+    container_name: snowstorm
+    restart: always
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    entrypoint: java -Xms2g -Xmx4g --add-opens java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED -cp @/app/jib-classpath-file org.snomed.snowstorm.SnowstormApplication --elasticsearch.urls=http://es:9200
+    networks:
+      elastic:
+        aliases:
+          - snowstorm
+      validator-net:
+    ports:
+      - 8180:8080
+
+
+  snowstorm-browser:
+    image: snomedinternational/snomedct-browser:latest
+    container_name: browser
+    depends_on:
+      - snowstorm
+    links:
+      - snowstorm:snowstorm
+    networks:
+      - elastic
+      - validator-net
+    environment:
+      - API_HOST=http://snowstorm:8080/
+    ports:
+      - 8082:80
+    restart: always
+
+  init-script-snowstorm:
+    image: appropriate/curl
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - .snowstorm-init-status:/status
+      - ./init_snowstorm.sh:/usr/local/bin/init_snowstorm.sh
+    entrypoint: /bin/sh -c 'sh /usr/local/bin/init_snowstorm.sh'
+    networks:
+      - elastic
