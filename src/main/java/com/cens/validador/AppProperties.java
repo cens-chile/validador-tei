@@ -25,7 +25,8 @@ public class AppProperties {
 		private String fhir_package_core = null;
 		private String fhir_package_tei_version = null;
 		private String snomed_fhir_base_url = null;
-
+		private String loinc_fhir_base_url = null;
+		private String cie10_fhir_base_url = null;
 
 		public String getFhir_package_tei_version() {
 			return fhir_package_tei_version;
@@ -57,6 +58,22 @@ public class AppProperties {
 
 		public void setFhir_package_core(String fhir_package_core) {
 			this.fhir_package_core = fhir_package_core;
+		}
+
+		public String getLoinc_fhir_base_url() {
+			return loinc_fhir_base_url;
+		}
+
+		public void setLoinc_fhir_base_url(String loinc_fhir_base_url) {
+			this.loinc_fhir_base_url = loinc_fhir_base_url;
+		}
+
+		public String getCie10_fhir_base_url() {
+			return cie10_fhir_base_url;
+		}
+
+		public void setCie10_fhir_base_url(String cie10_fhir_base_url) {
+			this.cie10_fhir_base_url = cie10_fhir_base_url;
 		}
 	}
 	}

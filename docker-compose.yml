@@ -14,9 +14,12 @@ services:
     ports:
       - "${SERVER_PORT:?err}:8080"
     depends_on:
-      - snowstorm
+      init-script-loinc-cie:
+        condition: service_completed_successfully
     environment:
       SNOMED_FHIR_BASE_URL: ${SNOMED_FHIR_BASE_URL:?err}
+      LOINC_FHIR_BASE_URL: ${LOINC_FHIR_BASE_URL:?err}
+      CIE10_FHIR_BASE_URL: ${CIE10_FHIR_BASE_URL:?err}
       TEI_FHIR_PACKAGE_TEI: ${TEI_FHIR_PACKAGE_TEI:?err}
       TEI_FHIR_PACKAGE_CORE: ${TEI_FHIR_PACKAGE_CORE:?err}
       TEI_FHIR_PACKAGE_TEI_VERSION: ${TEI_FHIR_PACKAGE_TEI_VERSION:?err}
@@ -60,6 +63,11 @@ services:
         aliases:
           - snowstorm
       validator-net:
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
     ports:
       - 8180:8080
 
@@ -87,7 +95,29 @@ services:
         condition: service_healthy
     volumes:
       - .snowstorm-init-status:/status
-      - ./init_snowstorm.sh:/usr/local/bin/init_snowstorm.sh
+      - ./init-snowstorm/init_snowstorm.sh:/usr/local/bin/init_snowstorm.sh
     entrypoint: /bin/sh -c 'sh /usr/local/bin/init_snowstorm.sh'
     networks:
       - elastic
+
+  init-script-loinc-cie:
+    image: bellsoft/liberica-runtime-container:jdk-17-musl
+    depends_on:
+      snowstorm:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      init-script-snowstorm:
+        condition: service_completed_successfully
+    environment:
+      LOINC_FILE: ${LOINC_FILE:?err}
+      ICD10_FILE: ${ICD10_FILE:?err}
+    volumes:
+      - .snowstorm-init-status:/status
+      - ./init-files:/files/.
+      - ./init-snowstorm:/code/.
+    entrypoint: /bin/sh -c 'sh /code/load-loinc-cie10.sh'
+    #entrypoint: /bin/sh -c 'java --version'
+    networks:
+      - elastic
+      - validator-net

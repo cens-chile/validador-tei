@@ -36,3 +36,6 @@ nb-configuration.xml
 mvnw*
 TODO.md
 .snowstorm-init-status/
+init-files/*
+init-snowstorm/hapi-fhir-cli.jar
+!/**/.gitkeep
