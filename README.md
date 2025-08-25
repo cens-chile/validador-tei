@@ -106,7 +106,7 @@ no adscritas a las garantías explícitas de salud (GES).
 
 El componente de Validación permite contar con una herramienta que realiza una revisión del contenido de un evento evaluando
 su comprobación de las variables y su estructura basado en la guía [TEI](https://interoperabilidad.minsal.cl/fhir/ig/tei/0.2.1/index.html), 
-además realiza una validación de los conjuntos de valores definidos en las estructuras de la gía de Implementación y de catalogos externos como SNOMED, LOINC, ICD10. 
+además realiza una validación de los conjuntos de valores definidos en las estructuras de la gía de Implementación y de catálogos externos como SNOMED, LOINC, ICD10. 
 
 Utiliza un Servidor [HAPIFHIR Plain Server](https://hapifhir.io/hapi-fhir/docs/server_plain/server_types.html#plain-server-facade) con la precarga de la guía de implementación TEI y un Servidor terminológico Open Source llamado [Snowstorm](https://github.com/IHTSDO/snowstorm)
 
@@ -148,7 +148,7 @@ Inicialmente se necesita un servidor donde desplegar el componente de validació
 This is an example of how to list things you need to use the software and how to install them.
 * [Instalación de Docker](https://docs.docker.com/desktop/setup/install/linux/)
 * [Instalación de GIT](https://git-scm.com/downloads/linux)
-* Descargar fuente LOINC: https://loinc-org.translate.goog/downloads/?_x_tr_sl=en&_x_tr_tl=es&_x_tr_hl=es&_x_tr_pto=tc
+* Descargar fuente LOINC: https://loinc.org/downloads/
 * Descargar fuente CIE10: https://icdcdn.who.int/icd10/index.html
 
 
