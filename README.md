@@ -181,9 +181,9 @@ Los nombres de los archivos pueden variar según las versiones
     TEI_FHIR_PACKAGE_TEI=package_tei.tgz
     TEI_FHIR_PACKAGE_TEI_VERSION=0.2.1
     TEI_FHIR_PACKAGE_CORE=package_core.tgz
-    SNOMED_FHIR_BASE_URL=http://snowstorm:8180/fhir
-    LOINC_FHIR_BASE_URL=http://snowstorm:8180/fhir
-    CIE10_FHIR_BASE_URL=http://snowstorm:8180/fhir
+    SNOMED_FHIR_BASE_URL=http://snowstorm:8080/fhir
+    LOINC_FHIR_BASE_URL=http://snowstorm:8080/fhir
+    CIE10_FHIR_BASE_URL=http://snowstorm:8080/fhir
     ICD10_FILE=icd102019en.xml.zip
     LOINC_FILE=Loinc_2.80.zip
     ```
